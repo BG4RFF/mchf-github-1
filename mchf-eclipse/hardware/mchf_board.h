@@ -40,13 +40,13 @@
 //
 // -----------------------------------------------------------------------------
 #define		DEVICE_STRING			"mcHF QRP Transceiver"
-#define 	AUTHOR_STRING   		"K Atanassov - M0NKA 2014-2016"
+#define 	AUTHOR_STRING   		"K Atanassov - M0NKA 2014-2015"
 //
 #define 	TRX4M_VER_MAJOR			0
 #define 	TRX4M_VER_MINOR			219
-#define 	TRX4M_VER_RELEASE		24
-#define 	TRX4M_VER_BUILD			0
-
+#define 	TRX4M_VER_RELEASE		26
+//
+#define 	TRX4M_VER_BUILD			17
 //
 #define		ATTRIB_STRING1			"Additional Contributions by"
 #define		ATTRIB_STRING2			"KA7OEI, DF8OE, the Open Source"
@@ -57,6 +57,12 @@
 
 #define		WD_REFRESH_WINDOW		80
 #define		WD_REFRESH_COUNTER		127
+
+// UI v 0.5 with WiFi option
+#define 	USE_UART_WIFI
+
+// TP v 0.5 layout/ or Andreas 0.4 mod
+#define 	USE_UI_05_TP
 
 // -----------------------------------------------------------------------------
 //						PORT PINS ALLOCATION
@@ -81,9 +87,19 @@
 #define ADC2_RET_SOURCE			GPIO_PinSource3
 #define ADC2_RET_PIO       		GPIOA
 // pin 4
-#define DAC0 					GPIO_Pin_4
-#define DAC0_SOURCE				GPIO_PinSource4
-#define DAC0_PIO       			GPIOA
+#ifndef USE_UI_05_TP
+#define TP_IRQ					GPIO_Pin_4				// - Andreas TP mod
+#define TP_IRQ_SOURCE			GPIO_PinSource4
+#define TP_IRQ_PIO				GPIOA
+#endif
+//#define DAC0 					GPIO_Pin_4				// - no longer in use
+//#define DAC0_SOURCE			GPIO_PinSource4
+//#define DAC0_PIO       		GPIOA
+#ifdef USE_UART_WIFI
+#define BAND2 					GPIO_Pin_4				// - if WiFi option used in UI v 0.5
+#define BAND2_SOURCE			GPIO_PinSource4
+#define BAND2_PIO       		GPIOA
+#endif
 // pin 5
 #define DAC1 					GPIO_Pin_5
 #define DAC1_SOURCE				GPIO_PinSource5
@@ -93,66 +109,93 @@
 #define ADC1_PWR_SOURCE			GPIO_PinSource6
 #define ADC1_PWR_PIO       		GPIOA
 // pin 7
-#define BAND0		 			GPIO_Pin_7
-#define BAND0_SOURCE			GPIO_PinSource7
-#define BAND0_PIO       		GPIOA
+#define BAND0		 	GPIO_Pin_7
+#define BAND0_SOURCE		GPIO_PinSource7
+#define BAND0_PIO       	GPIOA
 // pin 8
-#define BAND1		 			GPIO_Pin_8
-#define BAND1_SOURCE			GPIO_PinSource8
-#define BAND1_PIO       		GPIOA
+#define BAND1		 		GPIO_Pin_8
+#define BAND1_SOURCE		GPIO_PinSource8
+#define BAND1_PIO       	GPIOA
 // pin 9
-#define DEBUG_PRINT	 			GPIO_Pin_9
-#define DEBUG_PRINT_SOURCE		GPIO_PinSource9
-#define DEBUG_PRINT_PIO    		GPIOA
+#ifndef USE_UART_WIFI
+#define DEBUG_PRINT	 		GPIO_Pin_9
+#define DEBUG_PRINT_SOURCE	GPIO_PinSource9
+#define DEBUG_PRINT_PIO    	GPIOA
+#endif
+#ifdef USE_UART_WIFI
+#define UART_TX		 		GPIO_Pin_9
+#define UART_TX_SOURCE		GPIO_PinSource9
+#define UART_TX_PIO    		GPIOA
+#endif
+#ifndef USE_UI_05_TP
+#define TP_CS				GPIO_Pin_9				// - Andreas TP mod
+#define TP_CS_SOURCE		GPIO_PinSource9
+#define TP_CS_PIO			GPIOA
+#endif
 // pin 10
-#define BAND2 					GPIO_Pin_10
-#define BAND2_SOURCE			GPIO_PinSource10
-#define BAND2_PIO       		GPIOA
+#ifndef USE_UART_WIFI
+#define BAND2 				GPIO_Pin_10				// - only in UI v 0.4 and older
+#define BAND2_SOURCE		GPIO_PinSource10
+#define BAND2_PIO       	GPIOA
+#endif
+#ifdef USE_UART_WIFI
+#define UART_RX		 		GPIO_Pin_10
+#define UART_RX_SOURCE		GPIO_PinSource10
+#define UART_RX_PIO    		GPIOA
+#endif
 // pin 11
 // USB DFU
 //
 // pin 12
 // USB DFU
 //
-//
 // pin 13
 // SWDIO
-//
+#ifdef USE_UI_05_TP
+#define TP_CS				GPIO_Pin_13				// - TP UI v 0.5
+#define TP_CS_SOURCE		GPIO_PinSource13
+#define TP_CS_PIO			GPIOA
+#endif
 // pin 14
 // SWCLK
+#ifdef USE_UI_05_TP
+#define TP_IRQ				GPIO_Pin_14				// - TP UI v 0.5
+#define TP_IRQ_SOURCE		GPIO_PinSource14
+#define TP_IRQ_PIO			GPIOA
+#endif
 //
 //
 // pin 15
-#define CODEC_I2S_WS			GPIO_Pin_15
-#define CODEC_I2S_WS_SOURCE		GPIO_PinSource15
-#define CODEC_I2S_WS_PIO  		GPIOA
+#define CODEC_I2S_WS		GPIO_Pin_15
+#define CODEC_I2S_WS_SOURCE	GPIO_PinSource15
+#define CODEC_I2S_WS_PIO  	GPIOA
 //
 // -----------------------------------------------------------------------------
 // ---- 						PORT B										----
 // -----------------------------------------------------------------------------
 // pin 0
-#define BUTTON_BNDM				GPIO_Pin_0
-#define BUTTON_BNDM_SOURCE		GPIO_PinSource0
+#define BUTTON_BNDM		GPIO_Pin_0
+#define BUTTON_BNDM_SOURCE	GPIO_PinSource0
 #define BUTTON_BNDM_PIO       	GPIOB
 // pin 1
-#define PTT_CNTR 				GPIO_Pin_1
-#define PTT_CNTR_SOURCE			GPIO_PinSource1
-#define PTT_CNTR_PIO       		GPIOB
+#define PTT_CNTR 		GPIO_Pin_1
+#define PTT_CNTR_SOURCE		GPIO_PinSource1
+#define PTT_CNTR_PIO       	GPIOB
 // pin 2
-#define BUTTON_BNDP 			GPIO_Pin_2
-#define BUTTON_BNDP_SOURCE		GPIO_PinSource2
+#define BUTTON_BNDP 		GPIO_Pin_2
+#define BUTTON_BNDP_SOURCE	GPIO_PinSource2
 #define BUTTON_BNDP_PIO       	GPIOB
 // pin 3
-#define BUTTON_M2 				GPIO_Pin_3
-#define BUTTON_M2_SOURCE		GPIO_PinSource3
+#define BUTTON_M2 		GPIO_Pin_3
+#define BUTTON_M2_SOURCE	GPIO_PinSource3
 #define BUTTON_M2_PIO       	GPIOB
 // pin 4
-#define ENC_ONE_CH1 			GPIO_Pin_4
-#define ENC_ONE_CH1_SOURCE		GPIO_PinSource4
+#define ENC_ONE_CH1 		GPIO_Pin_4
+#define ENC_ONE_CH1_SOURCE	GPIO_PinSource4
 #define ENC_ONE_CH1_PIO       	GPIOB
 // pin 5
-#define ENC_ONE_CH2 			GPIO_Pin_5
-#define ENC_ONE_CH2_SOURCE		GPIO_PinSource5
+#define ENC_ONE_CH2 		GPIO_Pin_5
+#define ENC_ONE_CH2_SOURCE	GPIO_PinSource5
 #define ENC_ONE_CH2_PIO       	GPIOB
 // pin 6
 #define I2C1_SCL_PIN            GPIO_Pin_6
@@ -163,12 +206,12 @@
 #define I2C1_SDA_PINSRC         GPIO_PinSource7
 #define I2C1_SDA_GPIO           GPIOB
 // pin 8
-#define BUTTON_G3 				GPIO_Pin_8
-#define BUTTON_G3_SOURCE		GPIO_PinSource8
+#define BUTTON_G3 		GPIO_Pin_8
+#define BUTTON_G3_SOURCE	GPIO_PinSource8
 #define BUTTON_G3_PIO       	GPIOB
 // pin 9
-#define GREEN_LED 				GPIO_Pin_9
-#define GREEN_LED_SOURCE		GPIO_PinSource9
+#define GREEN_LED 		GPIO_Pin_9
+#define GREEN_LED_SOURCE	GPIO_PinSource9
 #define GREEN_LED_PIO       	GPIOB
 // pin 10
 #define I2C2_SCL_PIN            GPIO_Pin_10
@@ -179,12 +222,12 @@
 #define I2C2_SDA_PINSRC         GPIO_PinSource11
 #define I2C2_SDA_GPIO           GPIOB
 // pin 12
-#define RED_LED 				GPIO_Pin_12
-#define RED_LED_SOURCE			GPIO_PinSource12
-#define RED_LED_PIO       		GPIOB
+#define RED_LED 		GPIO_Pin_12
+#define RED_LED_SOURCE		GPIO_PinSource12
+#define RED_LED_PIO       	GPIOB
 // pin 13
-#define LCD_SCK 				GPIO_Pin_13
-#define LCD_SCK_SOURCE			GPIO_PinSource13
+#define LCD_SCK 		GPIO_Pin_13
+#define LCD_SCK_SOURCE		GPIO_PinSource13
 #define LCD_SCK_PIO         	GPIOB
 // pin 14
 // USB HOST
@@ -197,205 +240,205 @@
 // ---- 						PORT C										----
 // -----------------------------------------------------------------------------
 // pin 0
-#define BUTTON_G4 				GPIO_Pin_0
-#define BUTTON_G4_SOURCE		GPIO_PinSource0
+#define BUTTON_G4 		GPIO_Pin_0
+#define BUTTON_G4_SOURCE	GPIO_PinSource0
 #define BUTTON_G4_PIO       	GPIOC
 // pin 1
-#define BUTTON_M3 				GPIO_Pin_1
-#define BUTTON_M3_SOURCE		GPIO_PinSource1
+#define BUTTON_M3 		GPIO_Pin_1
+#define BUTTON_M3_SOURCE	GPIO_PinSource1
 #define BUTTON_M3_PIO       	GPIOC
 // pin 2
-#define LCD_MISO 				GPIO_Pin_2
-#define LCD_MISO_SOURCE			GPIO_PinSource2
+#define LCD_MISO 		GPIO_Pin_2
+#define LCD_MISO_SOURCE		GPIO_PinSource2
 #define LCD_MISO_PIO         	GPIOC
 // pin 3
-#define LCD_MOSI 				GPIO_Pin_3
-#define LCD_MOSI_SOURCE			GPIO_PinSource3
+#define LCD_MOSI 		GPIO_Pin_3
+#define LCD_MOSI_SOURCE		GPIO_PinSource3
 #define LCD_MOSI_PIO         	GPIOC
 // pin 4
-#define BUTTON_STEPM			GPIO_Pin_4
-#define BUTTON_STEPM_SOURCE		GPIO_PinSource4
+#define BUTTON_STEPM		GPIO_Pin_4
+#define BUTTON_STEPM_SOURCE	GPIO_PinSource4
 #define BUTTON_STEPM_PIO       	GPIOC
 // pin 5
-#define BUTTON_STEPP			GPIO_Pin_5
-#define BUTTON_STEPP_SOURCE		GPIO_PinSource5
+#define BUTTON_STEPP		GPIO_Pin_5
+#define BUTTON_STEPP_SOURCE	GPIO_PinSource5
 #define BUTTON_STEPP_PIO       	GPIOC
 // pin 6
-#define FREQ_ENC_CH1 			GPIO_Pin_6
-#define FREQ_ENC_CH1_SOURCE		GPIO_PinSource6
+#define FREQ_ENC_CH1 		GPIO_Pin_6
+#define FREQ_ENC_CH1_SOURCE	GPIO_PinSource6
 #define FREQ_ENC_CH1_PIO        GPIOC
 // pin 7
-#define FREQ_ENC_CH2 			GPIO_Pin_7
-#define FREQ_ENC_CH2_SOURCE		GPIO_PinSource7
+#define FREQ_ENC_CH2 		GPIO_Pin_7
+#define FREQ_ENC_CH2_SOURCE	GPIO_PinSource7
 #define FREQ_ENC_CH2_PIO        GPIOC
 // pin 8
-#define POWER_DOWN 				GPIO_Pin_8
-#define POWER_DOWN_SOURCE		GPIO_PinSource8
+#define POWER_DOWN 		GPIO_Pin_8
+#define POWER_DOWN_SOURCE	GPIO_PinSource8
 #define POWER_DOWN_PIO         	GPIOC
 // pin 9
-#define CODEC_CLOCK 			GPIO_Pin_9
-#define CODEC_CLOCK_SOURCE		GPIO_PinSource9
+#define CODEC_CLOCK 		GPIO_Pin_9
+#define CODEC_CLOCK_SOURCE	GPIO_PinSource9
 #define CODEC_CLOCK_PIO         GPIOC
 // pin 10
-#define CODEC_I2S_SCK 			GPIO_Pin_10
+#define CODEC_I2S_SCK 		GPIO_Pin_10
 #define CODEC_I2S_SCK_SOURCE	GPIO_PinSource10
 #define CODEC_I2S_SCK_PIO       GPIOC
 // pin 11
-#define CODEC_I2S_SDI 			GPIO_Pin_11
+#define CODEC_I2S_SDI 		GPIO_Pin_11
 #define CODEC_I2S_SDI_SOURCE	GPIO_PinSource11
 #define CODEC_I2S_SDI_PIO       GPIOC
 // pin 12
-#define CODEC_I2S_SDO 			GPIO_Pin_12
+#define CODEC_I2S_SDO 		GPIO_Pin_12
 #define CODEC_I2S_SDO_SOURCE	GPIO_PinSource12
 #define CODEC_I2S_SDO_PIO       GPIOC
 // pin 13
-#define BUTTON_PWR				GPIO_Pin_13
-#define BUTTON_PWR_SOURCE		GPIO_PinSource13
+#define BUTTON_PWR		GPIO_Pin_13
+#define BUTTON_PWR_SOURCE	GPIO_PinSource13
 #define BUTTON_PWR_PIO       	GPIOC
 // pin 14
-#define BUTTON_M1				GPIO_Pin_14
-#define BUTTON_M1_SOURCE		GPIO_PinSource14
+#define BUTTON_M1		GPIO_Pin_14
+#define BUTTON_M1_SOURCE	GPIO_PinSource14
 #define BUTTON_M1_PIO       	GPIOC
 // pin 15
-#define BUTTON_F3				GPIO_Pin_15
-#define BUTTON_F3_SOURCE		GPIO_PinSource15
+#define BUTTON_F3		GPIO_Pin_15
+#define BUTTON_F3_SOURCE	GPIO_PinSource15
 #define BUTTON_F3_PIO       	GPIOC
 //
 // -----------------------------------------------------------------------------
 // ---- 						PORT D										----
 // -----------------------------------------------------------------------------
 // pin 0
-#define LCD_D2					GPIO_Pin_0
-#define LCD_D2_SOURCE			GPIO_PinSource0
-#define LCD_D2_PIO      		GPIOD
+#define LCD_D2			GPIO_Pin_0
+#define LCD_D2_SOURCE		GPIO_PinSource0
+#define LCD_D2_PIO      	GPIOD
 // pin 1
-#define LCD_D3					GPIO_Pin_1
-#define LCD_D3_SOURCE			GPIO_PinSource1
-#define LCD_D3_PIO      		GPIOD
+#define LCD_D3			GPIO_Pin_1
+#define LCD_D3_SOURCE		GPIO_PinSource1
+#define LCD_D3_PIO      	GPIOD
 // pin 2
-#define LCD_BACKLIGHT			GPIO_Pin_2
+#define LCD_BACKLIGHT		GPIO_Pin_2
 #define LCD_BACKLIGHT_SOURCE	GPIO_PinSource2
 #define LCD_BACKLIGHT_PIO      	GPIOD
 // pin 3
-#define LCD_RESET				GPIO_Pin_3
-#define LCD_RESET_SOURCE		GPIO_PinSource3
-#define LCD_RESET_PIO      		GPIOD
+#define LCD_RESET		GPIO_Pin_3
+#define LCD_RESET_SOURCE	GPIO_PinSource3
+#define LCD_RESET_PIO      	GPIOD
 // pin 4
-#define LCD_RD					GPIO_Pin_4
-#define LCD_RD_SOURCE			GPIO_PinSource4
-#define LCD_RD_PIO      		GPIOD
+#define LCD_RD			GPIO_Pin_4
+#define LCD_RD_SOURCE		GPIO_PinSource4
+#define LCD_RD_PIO      	GPIOD
 // pin 5
-#define LCD_WR					GPIO_Pin_5
-#define LCD_WR_SOURCE			GPIO_PinSource5
-#define LCD_WR_PIO      		GPIOD
+#define LCD_WR			GPIO_Pin_5
+#define LCD_WR_SOURCE		GPIO_PinSource5
+#define LCD_WR_PIO      	GPIOD
 // pin 6
-#define BUTTON_F1				GPIO_Pin_6
-#define BUTTON_F1_SOURCE		GPIO_PinSource6
+#define BUTTON_F1		GPIO_Pin_6
+#define BUTTON_F1_SOURCE	GPIO_PinSource6
 #define BUTTON_F1_PIO       	GPIOD
 // pin 7
-#define LCD_CSA					GPIO_Pin_7
-#define LCD_CSA_SOURCE			GPIO_PinSource7
-#define LCD_CSA_PIO      		GPIOD
+#define LCD_CSA			GPIO_Pin_7
+#define LCD_CSA_SOURCE		GPIO_PinSource7
+#define LCD_CSA_PIO      	GPIOD
 // pin 8
-#define LCD_D15					GPIO_Pin_8
-#define LCD_D15_SOURCE			GPIO_PinSource8
-#define LCD_D15_PIO      		GPIOD
+#define LCD_D15			GPIO_Pin_8
+#define LCD_D15_SOURCE		GPIO_PinSource8
+#define LCD_D15_PIO      	GPIOD
 // pin 9
-#define LCD_D16					GPIO_Pin_9
-#define LCD_D16_SOURCE			GPIO_PinSource9
-#define LCD_D16_PIO      		GPIOD
+#define LCD_D16			GPIO_Pin_9
+#define LCD_D16_SOURCE		GPIO_PinSource9
+#define LCD_D16_PIO      	GPIOD
 // pin 10
-#define LCD_D17					GPIO_Pin_10
-#define LCD_D17_SOURCE			GPIO_PinSource10
-#define LCD_D17_PIO      		GPIOD
+#define LCD_D17			GPIO_Pin_10
+#define LCD_D17_SOURCE		GPIO_PinSource10
+#define LCD_D17_PIO      	GPIOD
 // pin 11
-#define LCD_RS					GPIO_Pin_11
-#define LCD_RS_SOURCE			GPIO_PinSource11
-#define LCD_RS_PIO      		GPIOD
+#define LCD_RS			GPIO_Pin_11
+#define LCD_RS_SOURCE		GPIO_PinSource11
+#define LCD_RS_PIO      	GPIOD
 // pin 12
-#define ENC_TWO_CH1 			GPIO_Pin_12
-#define ENC_TWO_CH1_SOURCE		GPIO_PinSource12
+#define ENC_TWO_CH1 		GPIO_Pin_12
+#define ENC_TWO_CH1_SOURCE	GPIO_PinSource12
 #define ENC_TWO_CH1_PIO         GPIOD
 // pin 13
-#define ENC_TWO_CH2 			GPIO_Pin_13
-#define ENC_TWO_CH2_SOURCE		GPIO_PinSource13
+#define ENC_TWO_CH2 		GPIO_Pin_13
+#define ENC_TWO_CH2_SOURCE	GPIO_PinSource13
 #define ENC_TWO_CH2_PIO         GPIOD
 // pin 14
-#define LCD_D0					GPIO_Pin_14
-#define LCD_D0_SOURCE			GPIO_PinSource14
-#define LCD_D0_PIO      		GPIOD
+#define LCD_D0			GPIO_Pin_14
+#define LCD_D0_SOURCE		GPIO_PinSource14
+#define LCD_D0_PIO      	GPIOD
 // pin 15
-#define LCD_D1					GPIO_Pin_15
-#define LCD_D1_SOURCE			GPIO_PinSource15
-#define LCD_D1_PIO      		GPIOD
+#define LCD_D1			GPIO_Pin_15
+#define LCD_D1_SOURCE		GPIO_PinSource15
+#define LCD_D1_PIO      	GPIOD
 //
 // -----------------------------------------------------------------------------
 // ---- 						PORT E										----
 // -----------------------------------------------------------------------------
 // pin 0
-#define PADDLE_DAH				GPIO_Pin_0
-#define PADDLE_DAH_SOURCE		GPIO_PinSource0
+#define PADDLE_DAH		GPIO_Pin_0
+#define PADDLE_DAH_SOURCE	GPIO_PinSource0
 #define PADDLE_DAH_PIO       	GPIOE
 // pin 1
-#define PADDLE_DIT				GPIO_Pin_1
-#define PADDLE_DIT_SOURCE		GPIO_PinSource1
+#define PADDLE_DIT		GPIO_Pin_1
+#define PADDLE_DIT_SOURCE	GPIO_PinSource1
 #define PADDLE_DIT_PIO       	GPIOE
 // pin 2
-#define BUTTON_F2				GPIO_Pin_2
-#define BUTTON_F2_SOURCE		GPIO_PinSource2
+#define BUTTON_F2		GPIO_Pin_2
+#define BUTTON_F2_SOURCE	GPIO_PinSource2
 #define BUTTON_F2_PIO       	GPIOE
 // pin 3
-#define BUTTON_F4				GPIO_Pin_3
-#define BUTTON_F4_SOURCE		GPIO_PinSource3
+#define BUTTON_F4		GPIO_Pin_3
+#define BUTTON_F4_SOURCE	GPIO_PinSource3
 #define BUTTON_F4_PIO       	GPIOE
 // pin 4
-#define BUTTON_G2				GPIO_Pin_4
-#define BUTTON_G2_SOURCE		GPIO_PinSource4
+#define BUTTON_G2		GPIO_Pin_4
+#define BUTTON_G2_SOURCE	GPIO_PinSource4
 #define BUTTON_G2_PIO       	GPIOE
 // pin 5
-#define BUTTON_F5				GPIO_Pin_5
-#define BUTTON_F5_SOURCE		GPIO_PinSource5
+#define BUTTON_F5		GPIO_Pin_5
+#define BUTTON_F5_SOURCE	GPIO_PinSource5
 #define BUTTON_F5_PIO       	GPIOE
 // pin 6
-#define BUTTON_G1				GPIO_Pin_6
-#define BUTTON_G1_SOURCE		GPIO_PinSource6
+#define BUTTON_G1		GPIO_Pin_6
+#define BUTTON_G1_SOURCE	GPIO_PinSource6
 #define BUTTON_G1_PIO       	GPIOE
 // pin 7
-#define LCD_D4					GPIO_Pin_7
-#define LCD_D4_SOURCE			GPIO_PinSource7
-#define LCD_D4_PIO      		GPIOE
+#define LCD_D4			GPIO_Pin_7
+#define LCD_D4_SOURCE		GPIO_PinSource7
+#define LCD_D4_PIO      	GPIOE
 // pin 8
-#define LCD_D5					GPIO_Pin_8
-#define LCD_D5_SOURCE			GPIO_PinSource8
-#define LCD_D5_PIO      		GPIOE
+#define LCD_D5			GPIO_Pin_8
+#define LCD_D5_SOURCE		GPIO_PinSource8
+#define LCD_D5_PIO      	GPIOE
 // pin 9
-#define LCD_D6					GPIO_Pin_9
-#define LCD_D6_SOURCE			GPIO_PinSource9
-#define LCD_D6_PIO      		GPIOE
+#define LCD_D6			GPIO_Pin_9
+#define LCD_D6_SOURCE		GPIO_PinSource9
+#define LCD_D6_PIO      	GPIOE
 // pin 10
-#define LCD_D7					GPIO_Pin_10
-#define LCD_D7_SOURCE			GPIO_PinSource10
-#define LCD_D7_PIO      		GPIOE
+#define LCD_D7			GPIO_Pin_10
+#define LCD_D7_SOURCE		GPIO_PinSource10
+#define LCD_D7_PIO      	GPIOE
 // pin 11
-#define LCD_D10					GPIO_Pin_11
-#define LCD_D10_SOURCE			GPIO_PinSource11
-#define LCD_D10_PIO      		GPIOE
+#define LCD_D10			GPIO_Pin_11
+#define LCD_D10_SOURCE		GPIO_PinSource11
+#define LCD_D10_PIO      	GPIOE
 // pin 12
-#define LCD_D11					GPIO_Pin_12
-#define LCD_D11_SOURCE			GPIO_PinSource12
-#define LCD_D11_PIO        		GPIOE
+#define LCD_D11			GPIO_Pin_12
+#define LCD_D11_SOURCE		GPIO_PinSource12
+#define LCD_D11_PIO        	GPIOE
 // pin 13
-#define LCD_D12					GPIO_Pin_13
-#define LCD_D12_SOURCE			GPIO_PinSource13
-#define LCD_D12_PIO      		GPIOE
+#define LCD_D12			GPIO_Pin_13
+#define LCD_D12_SOURCE		GPIO_PinSource13
+#define LCD_D12_PIO      	GPIOE
 // pin 14
-#define LCD_D13					GPIO_Pin_14
-#define LCD_D13_SOURCE			GPIO_PinSource14
-#define LCD_D13_PIO      		GPIOE
+#define LCD_D13			GPIO_Pin_14
+#define LCD_D13_SOURCE		GPIO_PinSource14
+#define LCD_D13_PIO      	GPIOE
 // pin 15
-#define LCD_D14					GPIO_Pin_15
-#define LCD_D14_SOURCE			GPIO_PinSource15
-#define LCD_D14_PIO      		GPIOE
+#define LCD_D14			GPIO_Pin_15
+#define LCD_D14_SOURCE		GPIO_PinSource15
+#define LCD_D14_PIO      	GPIOE
 //
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -419,8 +462,9 @@ typedef struct ButtonMap
 #define DEMOD_LSB					1
 #define DEMOD_CW					2
 #define DEMOD_AM					3
-#define DEMOD_DIGI					4
-#define DEMOD_MAX_MODE				4
+#define	DEMOD_FM					4
+#define DEMOD_DIGI					5
+#define DEMOD_MAX_MODE				5
 
 #define RTC_OSC_FREQ				32768
 
@@ -453,8 +497,8 @@ typedef struct ButtonMap
 #define	BAND_SIZE_80				500*KHZ_MULT		// 500 kHz in size (Region 2)
 //
 #define	BAND_MODE_60				1
-#define	BAND_FREQ_60				5258*KHZ_MULT		// 5258 kHz
-#define	BAND_SIZE_60				150*KHZ_MULT		// 150 kHz in size to allow different allocations
+#define	BAND_FREQ_60				5250*KHZ_MULT		// 5250 kHz
+#define	BAND_SIZE_60				200*KHZ_MULT		// 200 kHz in size to allow different allocations
 //
 #define	BAND_MODE_40				2
 #define	BAND_FREQ_40				7000*KHZ_MULT		// 7000 kHz
@@ -503,17 +547,16 @@ typedef struct ButtonMap
 #define ENC_ONE_MODE_AUDIO_GAIN		0
 #define ENC_ONE_MODE_ST_GAIN		1
 #define ENC_ONE_MAX_MODE			1
-
+//
 // encoder two
 #define ENC_TWO_MODE_RF_GAIN		0
-#define ENC_TWO_MODE_SIG_PROC	1
+#define ENC_TWO_MODE_SIG_PROC		1
 #define ENC_TWO_MAX_MODE			2
-
+//
 // encoder three
 #define ENC_THREE_MODE_RIT			0
 #define ENC_THREE_MODE_CW_SPEED		1
 #define ENC_THREE_MAX_MODE			2
-
 //
 // Audio filter select enumeration
 //
@@ -583,6 +626,8 @@ enum	{
 #define FILTER_7500HZ_WIDTH			7500
 #define	FILTER_10000HZ_WIDTH		10000
 //
+#define	HILBERT_3600HZ_WIDTH		3800	// Approximate bandwidth of 3.6 kHz wide Hilbert - This used to depict FM detection bandwidth
+//
 #define	FILT300_1	500
 #define	FILT300_2	550
 #define	FILT300_3	600
@@ -619,6 +664,8 @@ enum	{
 #define	FILT7500	3750
 //
 #define	FILT10000	5000
+//
+#define	HILBERT3600	1900	// "width" of "3.6 kHz" Hilbert filter - This used to depict FM detection bandwidth
 //
 #define	FILT_DISPLAY_WIDTH	256		// width, in pixels, of the spectral display on the screen - this value used to calculate Hz/pixel for indicating width of filter
 //
@@ -719,6 +766,8 @@ enum {
 #define	BACKLIGHT_BLANK_TIMING_DEFAULT	8		// default number of SECONDS for backlight blanking
 #define MIN_LCD_BLANK_DELAY_TIME	5			// minimum number of seconds for backlight "on" time
 #define LCD_STARTUP_BLANKING_TIME	3000		// number of DECISECONDS (e.g. SECONDS * 100) after power-up before LCD blanking occurs if no buttons are pressed/knobs turned
+
+#define MAX_VAR_ADDR 383
 //
 // *************************************************************************************************************************
 //
@@ -980,6 +1029,17 @@ enum {
 #define	EEPROM_TX_PTT_AUDIO_MUTE	207		// timer used for muting TX audio when keying PTT to suppress "click" or "thump"
 #define	EEPROM_MISC_FLAGS2			208		// Miscellaneous status flag, saved in EEPROM - see variable "misc_flags2"
 #define	EEPROM_FILTER_DISP_COLOUR	209		// This contains the color of the line under the spectrum/waterfall display
+#define	EEPROM_TX_IQ_AM_GAIN_BALANCE	210	// IQ Gain balance for AM transmission
+#define	EEPROM_TX_IQ_FM_GAIN_BALANCE	211	// IQ Gain balance for FM transmission
+#define	EEPROM_FM_SUBAUDIBLE_TONE_GEN	212		// index for storage of subaudible tone generation
+#define	EEPROM_FM_TONE_BURST_MODE	213		// tone burst mode
+#define EEPROM_FM_SQUELCH_SETTING	214		// FM squelch setting
+#define EEPROM_FM_RX_BANDWIDTH		215		// bandwidth setting for FM reception
+#define	EEPROM_RX_IQ_FM_GAIN_BALANCE	216	// IQ Gain balance for AM reception
+#define	EEPROM_FM_SUBAUDIBLE_TONE_DET	217		// index for storage of subaudible tone detection
+#define	EEPROM_KEYBOARD_BEEP_FREQ	218		// keyboard beep frequency (in Hz)
+#define EEPROM_BEEP_LOUDNESS		219		// loudness of beep (keyboard, sidetone test)
+#define	EEPROM_VERSION_MINOR		220		// Storage of current minor version number - used to detect change of firmware
 //
 // Frequency/mode (memory) storage - memories first 16
 //
@@ -1084,14 +1144,19 @@ typedef struct TransceiverState
 	//
 	int		tx_iq_lsb_phase_balance;	// setting for TX IQ phase balance
 	int		tx_iq_usb_phase_balance;	// setting for TX IQ phase balance
-
+	//
+	int		tx_iq_am_gain_balance;		// setting for TX IQ gain balance
+	int		tx_iq_fm_gain_balance;		// setting for TX IQ gain balance
+	//
 	float	tx_adj_gain_var_i;		// active variables for adjusting tx gain balance
 	float	tx_adj_gain_var_q;
 
 	int		rx_iq_lsb_gain_balance;		// setting for RX IQ gain balance
 	int		rx_iq_usb_gain_balance;		// setting for RX IQ gain balance
 	//
-	int		rx_iq_am_gain_balance;		// setting for RX IQ gain balance
+	int		rx_iq_am_gain_balance;		// setting for AM RX IQ gain balance
+	int		rx_iq_fm_gain_balance;		// setting for FM RX IQ gain balance
+	//
 	//
 	int		rx_iq_lsb_phase_balance;	// setting for RX IQ phase balance
 	int		rx_iq_usb_phase_balance;	// setting for RX IQ phase balance
@@ -1303,9 +1368,13 @@ typedef struct TransceiverState
 										// LSB+6 = 1 if SSB TX has transmit filter DISABLED
 										// LSB+7 = 0 = Spectrum Scope (analyzer), 1 = Waterfall display
 	uchar	misc_flags2;				// Used to hold individual status flags, stored in EEPROM location "EEPROM_MISC_FLAGS2"
-										// LSB = 0:  Display filter bandwidth on screen;  1 = Do not display filter bandwidth
+										// LSB = 0 if FM mode is DISABLED, 1 if FM mode is ENABLED
+										// LSB+1 = 0 if 2.5 kHz FM deviation, 1 for 5 kHz FM deviation
+										// LSB+2 = 1 if key/button beep is enabled
+										// LSB+3 = 1 if memory-save versus frequency restrictions are to be relaxed
 	ulong	sysclock;					// This counts up from zero when the unit is powered up at precisely 100 Hz over the long term.  This
 										// is NEVER reset and is used for timing certain events.
+	uint16_t	version_number_minor;	// version number - minor - used to hold version number and detect change
 	uint16_t	version_number_build;	// version number - build - used to hold version number and detect change
 	uint16_t	version_number_release;	// version number - release - used to hold version number and detect change
 	uchar	nb_agc_time_const;			// used to calculate the AGC time constant
@@ -1343,7 +1412,26 @@ typedef struct TransceiverState
 	bool	vfo_mem_flag;				// when TRUE, memory mode is enabled
 	bool	mem_disp;					// when TRUE, memory display is enabled
 	bool	load_eeprom_defaults;		// when TRUE, load EEPROM defaults into RAM when "UiDriverLoadEepromValues()" is called - MUST be saved by user IF these are to take effect!
-
+	ulong	fm_subaudible_tone_gen_select;	// lookup ("tone number") used to index the table tone generation (0 corresponds to "tone disabled")
+	uchar	fm_tone_burst_mode;			// this is the setting for the tone burst generator
+	ulong	fm_tone_burst_timing;		// this is used to time/schedule the duration of a tone burst
+	uchar	fm_sql_threshold;			// squelch threshold "dial" setting
+	uchar	fm_rx_bandwidth;			// bandwidth setting for FM reception
+	ulong	fm_subaudible_tone_det_select;	// lookup ("tone number") used to index the table for tone detection (0 corresponds to "disabled")
+	bool	beep_active;				// TRUE if beep is active
+	ulong	beep_frequency;				// beep frequency, in Hz
+	ulong	beep_timing;				// used to time/schedule the duration of a keyboard beep
+	uchar	beep_loudness;				// loudness of the keyboard/CW sidetone test beep
+	bool	load_freq_mode_defaults;	// when TRUE, load frequency/mode defaults into RAM when "UiDriverLoadEepromValues()" is called - MUST be saved by user IF these are to take effect!
+	bool	boot_halt_flag;				// when TRUE, boot-up is halted - used to allow various test functions
+	uchar	ser_eeprom_type;		// serial eeprom type
+	uchar	ser_eeprom_in_use;		// 0xFF = not in use, 0x1 = in use
+	uint8_t* eeprombuf;			// pointer to copy of config in RAM
+	uchar 	tp_present;			// touchscreen present = 1, absent = 0
+	uint8_t tp_x;				// touchscreen x coordinate
+	uint8_t tp_y;				// touchscreen y coordinate
+	bool	show_tp_coordinates;		// show coordinates on LCD
+//	uint16_t df8oe_test;			// only debugging use
 } TransceiverState;
 //
 
@@ -1381,9 +1469,15 @@ void mchf_board_post_init(void);
 
 void mchf_board_power_button_input_init(void);
 
-uint16_t Read_VirtEEPROM(uint16_t addr, uint16_t *value);
-uint16_t Write_VirtEEPROM(uint16_t addr, uint16_t value);
-uint16_t Write_VirtEEPROM_Signed(uint16_t addr, int value);
+void mchf_board_uart_send(char *s);
+
+uint16_t Read_EEPROM(uint16_t addr, uint16_t *value);
+uint16_t Write_EEPROM(uint16_t addr, uint16_t value);
+uint16_t Read_SerEEPROM(uint16_t addr, uint16_t *value);
+uint16_t Write_SerEEPROM(uint16_t addr, uint16_t value);
+void copy_virt2ser(void);
+void copy_ser2virt(void);
+void verify_servirt(void);
 
 // in main.c
 void CriticalError(ulong error);

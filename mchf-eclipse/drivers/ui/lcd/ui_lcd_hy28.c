@@ -353,7 +353,7 @@ void UiLcdHy28_SendByteSpi(uint8_t byte)
 //* Output Parameters   :
 //* Functions called    :
 //*----------------------------------------------------------------------------
-static uint8_t UiLcdHy28_ReadByteSpi(void)
+uint8_t UiLcdHy28_ReadByteSpi(void)
 {
    ulong timeout;
    uchar byte = 0;
@@ -486,11 +486,14 @@ unsigned short UiLcdHy28_ReadDataSpi(void)
 //*----------------------------------------------------------------------------
 void UiLcdHy28_WriteReg( unsigned short LCD_Reg, unsigned short LCD_RegValue)
 {
+   if(GPIO_ReadInputDataBit(TP_IRQ_PIO,TP_IRQ) == 0)	// touchscreen pressed -> read data
+	get_touchscreen_coordinates();
+
    if(sd.use_spi)
-   {
-      UiLcdHy28_WriteIndexSpi(LCD_Reg);
-      UiLcdHy28_WriteDataSpi(LCD_RegValue);
-   }
+    {
+     UiLcdHy28_WriteIndexSpi(LCD_Reg);
+     UiLcdHy28_WriteDataSpi(LCD_RegValue);
+    }
    else
    {
       LCD_REG = LCD_Reg;
@@ -1772,7 +1775,10 @@ uchar UiLcdHy28_Init(void)
       return 0;         // success, SPI found
 
    // SPI disable
-   UiLcdHy28_SpiDeInit();
+//   UiLcdHy28_SpiDeInit();
+
+    // SPI enable
+//   UiLcdHy28_SpiInit();
 
    // Select parallel
    sd.use_spi = 0;
@@ -1808,7 +1814,7 @@ void UiLcdHy28_ShowStartUpScreen(ulong hold_time)
 
    // Show first line
    sprintf(tx,"%s",DEVICE_STRING);
-   UiLcdHy28_PrintText(2,30,tx,Cyan,Black,1);		// Position with original text size:  78,40
+   UiLcdHy28_PrintText(0,30,tx,Cyan,Black,1);		// Position with original text size:  78,40
    //
 
    // Show second line
@@ -1820,15 +1826,17 @@ void UiLcdHy28_ShowStartUpScreen(ulong hold_time)
    UiLcdHy28_PrintText(110,80,tx,Grey3,Black,0);
 
    //
-   Read_VirtEEPROM(EEPROM_FREQ_CONV_MODE, &i);	// get setting of frequency translation mode
+   Read_EEPROM(EEPROM_FREQ_CONV_MODE, &i);	// get setting of frequency translation mode
 
    if(!(i & 0xff))	{
 	   sprintf(tx,"WARNING:  Freq. Translation is OFF!!!");
-	   UiLcdHy28_PrintText(16,110,tx,Red3,Black,0);
+	   UiLcdHy28_PrintText(16,120,tx,Black,Red3,0);
+	   sprintf(tx,"Translation is STRONGLY recommended!!");
+	   UiLcdHy28_PrintText(16,135,tx,Black,Red3,0);
    }
    else	{
 	   sprintf(tx," Freq. Translate On ");
-	   UiLcdHy28_PrintText(80,110,tx,Grey3,Black,0);
+	   UiLcdHy28_PrintText(80,120,tx,Grey3,Black,0);
    }
 
    // Display the mode of the display interface
@@ -1843,7 +1851,7 @@ void UiLcdHy28_ShowStartUpScreen(ulong hold_time)
    else
 	   sprintf(tx,"LCD: Parallel Mode");
    //
-   UiLcdHy28_PrintText(88,125,tx,Grey1,Black,0);
+   UiLcdHy28_PrintText(88,150,tx,Grey1,Black,0);
 
    //
    // Display startup frequency of Si570, By DF8OE, 201506
@@ -1852,12 +1860,12 @@ void UiLcdHy28_ShowStartUpScreen(ulong hold_time)
    int nachkomma = (int)roundf((os.fout-vorkomma)*10000);
 
    sprintf(tx,"%s%u%s%u%s","SI570 startup frequency: ",vorkomma,".",nachkomma," MHz");
-   UiLcdHy28_PrintText(15, 140, tx, Grey1, Black, 0);
+   UiLcdHy28_PrintText(15, 165, tx, Grey1, Black, 0);
    //
 
    if(ts.ee_init_stat != FLASH_COMPLETE)	{	// Show error code if problem with EEPROM init
 	   sprintf(tx, "EEPROM Init Error Code:  %d", ts.ee_init_stat);
-	   UiLcdHy28_PrintText(60,155,tx,White,Black,0);
+	   UiLcdHy28_PrintText(60,180,tx,White,Black,0);
    }
    else	{
 	   ushort adc2, adc3;
@@ -1865,7 +1873,7 @@ void UiLcdHy28_ShowStartUpScreen(ulong hold_time)
 	   adc3 = ADC_GetConversionValue(ADC3);
 	   if((adc2 > MAX_VSWR_MOD_VALUE) && (adc3 > MAX_VSWR_MOD_VALUE))	{
 		   sprintf(tx, "SWR Bridge resistor mod NOT completed!");
-		   UiLcdHy28_PrintText(8,155,tx,Red3,Black,0);
+		   UiLcdHy28_PrintText(8,180,tx,Red3,Black,0);
 		   //	sprintf(tx, "Value=%d,%d",adc2, adc3);			// debug
 		   //	UiLcdHy28_PrintText(60,170,tx,Red,Black,0);		// debug
 	   }
@@ -1892,4 +1900,15 @@ void UiLcdHy28_ShowStartUpScreen(ulong hold_time)
    // On screen delay - decrease if drivers init takes longer
    for(i = 0; i < hold_time; i++)
       non_os_delay();
+}
+
+
+void get_touchscreen_coordinates(void)
+{
+GPIO_ResetBits(TP_CS_PIO, TP_CS);
+UiLcdHy28_SendByteSpi(144);
+ts.tp_x = UiLcdHy28_ReadByteSpi();
+UiLcdHy28_SendByteSpi(208);
+ts.tp_y = UiLcdHy28_ReadByteSpi();
+GPIO_SetBits(TP_CS_PIO, TP_CS);
 }

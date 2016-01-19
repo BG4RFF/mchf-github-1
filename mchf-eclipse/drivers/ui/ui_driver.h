@@ -78,7 +78,7 @@ typedef struct KeypadState
 	bool	button_processed;
 
 	// Flag to indicate that the button had been continued to be pressed during debounce
-	bool	button_still_pressed;
+	bool	button_just_pressed;
 
 	// Flag to indicate that debounce check was complete
 	bool	debounce_check_complete;
@@ -179,6 +179,8 @@ enum	{
 	WFALL_GRAY = 0,
 	WFALL_HOT_COLD,
 	WFALL_RAINBOW,
+	WFALL_BLUE,
+	WFALL_GRAY_INVERSE,
 	WFALL_MAXVAL
 };
 //
@@ -544,7 +546,7 @@ typedef struct EepromSave
 #define POS_PWRN_IND_Y						193
 #define POS_PWR_IND_X						5
 #define POS_PWR_IND_Y						(POS_PWRN_IND_Y + 15)
-#define COL_PWR_IND							Grey
+#define COL_PWR_IND							Grey2
 
 #define POS_TEMP_IND_X						0
 #define POS_TEMP_IND_Y						0
@@ -611,6 +613,15 @@ void 	UiDriverChangeTuningStep(uchar is_up);
 void 	uiCodecMute(uchar val);
 //
 void 	UiDriverSaveEepromValuesPowerDown(void);
+void	UiCheckForEEPROMLoadFreqModeDefaultRequest(void);
+void	UiCheckForPressedKey(void);
+//
+void 	UiCalcSubaudibleFreq(void);
+void 	UiLoadToneBurstMode(void);
+void	UiCalcSubaudibleGenFreq(void);		// load/set current FM subaudible tone settings for generation
+//
+void 	UiCalcSubaudibleDetFreq(void);		// load/set current FM subaudible tone settings	for detection
+bool	check_tp_coordinates(uint8_t,uint8_t,uint8_t,uint8_t);
 //
 //
 #define	SIDETONE_MAX_GAIN	10		// Maximum sidetone gain
@@ -684,7 +695,7 @@ void 	UiDriverSaveEepromValuesPowerDown(void);
 #define	AUTO_LSB_USB_ON			1
 #define	AUTO_LSB_USB_60M		2
 #define	AUTO_LSB_USB_MAX		2
-#define	AUTO_LSB_USB_DEFAULT	AUTO_LSB_USB_OFF
+#define	AUTO_LSB_USB_DEFAULT	AUTO_LSB_USB_60M
 //
 // Items that are timed using ts.sysclock (operates at 100 Hz)
 //
@@ -704,22 +715,23 @@ void 	UiDriverSaveEepromValuesPowerDown(void);
 //
 enum {
 BUTTON_M2_PRESSED = 0,	// 0
-BUTTON_G3_PRESSED,		// 1
-BUTTON_G2_PRESSED,		// 2
+BUTTON_G3_PRESSED,	// 1
+BUTTON_G2_PRESSED,	// 2
 BUTTON_BNDM_PRESSED,	// 3
-BUTTON_G4_PRESSED,		// 4
-BUTTON_M3_PRESSED,		// 5
+BUTTON_G4_PRESSED,	// 4
+BUTTON_M3_PRESSED,	// 5
 BUTTON_STEPM_PRESSED,	// 6
 BUTTON_STEPP_PRESSED,	// 7
-BUTTON_M1_PRESSED,		// 8
-BUTTON_F3_PRESSED,		// 9 - Press and release handled in UiDriverProcessFunctionKeyClick()
-BUTTON_F1_PRESSED,		// 10 - Press and release handled in UiDriverProcessFunctionKeyClick()
-BUTTON_F2_PRESSED,		// 11 - Press and release handled in UiDriverProcessFunctionKeyClick()
-BUTTON_F4_PRESSED,		// 12 - Press and release handled in UiDriverProcessFunctionKeyClick()
+BUTTON_M1_PRESSED,	// 8
+BUTTON_F3_PRESSED,	// 9 - Press and release handled in UiDriverProcessFunctionKeyClick()
+BUTTON_F1_PRESSED,	// 10 - Press and release handled in UiDriverProcessFunctionKeyClick()
+BUTTON_F2_PRESSED,	// 11 - Press and release handled in UiDriverProcessFunctionKeyClick()
+BUTTON_F4_PRESSED,	// 12 - Press and release handled in UiDriverProcessFunctionKeyClick()
 BUTTON_BNDP_PRESSED,	// 13
-BUTTON_F5_PRESSED,		// 14 - Press and release handled in UiDriverProcessFunctionKeyClick()
-BUTTON_G1_PRESSED,		// 15
-BUTTON_POWER_PRESSED	// 16 - Used for press and release
+BUTTON_F5_PRESSED,	// 14 - Press and release handled in UiDriverProcessFunctionKeyClick()
+BUTTON_G1_PRESSED,	// 15
+BUTTON_POWER_PRESSED,	// 16 - Used for press and release
+TOUCHSCREEN_ACTIVE	// 17 - Touchscreen touched
 };
 //
 // UI Driver State machine definitions
