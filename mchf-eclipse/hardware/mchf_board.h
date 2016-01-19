@@ -55,6 +55,9 @@
 // -----------------------------------------------------------------------------
 //#define 	DEBUG_BUILD
 
+// Simplified Debug driver that uses bottom part of LCD for debug statements
+#define 	SIMPLE_DEBUG
+
 #define		WD_REFRESH_WINDOW		80
 #define		WD_REFRESH_COUNTER		127
 

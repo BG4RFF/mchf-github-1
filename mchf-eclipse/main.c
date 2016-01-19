@@ -28,6 +28,9 @@
 // Keyboard Driver
 #include "keyb_driver.h"
 
+// Debug driver
+#include "debug_driver.h"
+
 // Misc
 #include "softdds.h"
 
@@ -1168,6 +1171,9 @@ int main(void)
 	//
 	UiCheckForPressedKey();
 
+#ifdef SIMPLE_DEBUG
+	debug_driver_init();
+#endif
 
 #ifdef DEBUG_BUILD
 	printf("== main loop starting ==\n\r");
@@ -1179,7 +1185,7 @@ int main(void)
 		cnt++;
 		if(cnt == 200000)
 		{
-			UiLcdHy28_PrintText(0,80,"WiFi Status:",White,Black,4);
+			dd_print_text("wifi init...");
 
 			mchf_board_uart_send("AT+CWMODE=2");
 
@@ -1189,7 +1195,7 @@ int main(void)
 			non_os_delay();
 
 			if(received_string[0])
-				UiLcdHy28_PrintText(0,90,received_string,White,Black,4);
+				dd_print_text(received_string);
 		}
 
 		// UI events processing
@@ -1200,6 +1206,11 @@ int main(void)
 
 		// USB Host driver processing
 		//usbh_driver_thread();
+
+		// Debug print driver processing
+#ifdef SIMPLE_DEBUG
+		debug_driver_thread();
+#endif
 
 		// Reset WD - not working
 		//wd_reset();
