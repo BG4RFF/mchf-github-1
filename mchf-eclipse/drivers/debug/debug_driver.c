@@ -25,9 +25,9 @@
 #include <stdio.h>
 
 // Debug driver public state
+#ifdef SIMPLE_DEBUG
 __IO DebugDriver dd;
-
-
+#endif
 
 //*----------------------------------------------------------------------------
 //* Function Name       : debug_driver_init
@@ -39,11 +39,15 @@ __IO DebugDriver dd;
 //*----------------------------------------------------------------------------
 void debug_driver_init(void)
 {
+#ifdef SIMPLE_DEBUG
+
 	// Nothing in queue
 	dd.waiting = 0;
 
 	// Empty string
 	dd.print_buffer[0] = 0;
+
+#endif
 }
 
 //*----------------------------------------------------------------------------
@@ -56,7 +60,9 @@ void debug_driver_init(void)
 //*----------------------------------------------------------------------------
 void debug_driver_stop(void)
 {
+#ifdef SIMPLE_DEBUG
 
+#endif
 }
 
 //*----------------------------------------------------------------------------
@@ -69,6 +75,8 @@ void debug_driver_stop(void)
 //*----------------------------------------------------------------------------
 void debug_driver_thread(void)
 {
+#ifdef SIMPLE_DEBUG
+
 	// Anything in queue ?
 	if(!(dd.waiting))
 		return;
@@ -81,6 +89,8 @@ void debug_driver_thread(void)
 
 	// We are done here
 	dd.waiting = 0;
+
+#endif
 }
 
 
@@ -99,9 +109,7 @@ void debug_driver_thread(void)
 //*----------------------------------------------------------------------------
 void dd_print_text(char *text)
 {
-#ifndef SIMPLE_DEBUG
-	return;
-#endif
+#ifdef SIMPLE_DEBUG
 
 	if(text == NULL)
 		return;
@@ -115,4 +123,6 @@ void dd_print_text(char *text)
 
 	// Set as pending
 	dd.waiting = 1;
+
+#endif
 }

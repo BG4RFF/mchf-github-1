@@ -575,10 +575,8 @@ void DebugMon_Handler(void)
 //*----------------------------------------------------------------------------
 void SysTick_Handler(void)
 {
-//!	TimingDelay++;
-
-	// Process UI refresh
-//	ui_driver_irq();
+	// Debug print driver processing
+	debug_driver_thread();
 }
 
 //*----------------------------------------------------------------------------
@@ -1152,6 +1150,10 @@ int main(void)
 
 	// Audio HW init - again, using EEPROM-loaded values
 	audio_driver_init();
+
+	// Init simple debug driver
+	debug_driver_init();
+
 	//
 	//
 	UiCalcSubaudibleGenFreq();		// load/set current FM subaudible tone settings for generation
@@ -1170,10 +1172,6 @@ int main(void)
 	UiCheckForEEPROMLoadFreqModeDefaultRequest();	// check - and act on - request for loading frequency/mode defaults, if any
 	//
 	UiCheckForPressedKey();
-
-#ifdef SIMPLE_DEBUG
-	debug_driver_init();
-#endif
 
 #ifdef DEBUG_BUILD
 	printf("== main loop starting ==\n\r");
@@ -1195,7 +1193,16 @@ int main(void)
 			non_os_delay();
 
 			if(received_string[0])
+			{
+				dd_print_text("wifi init done.");
+
+				non_os_delay();
+				non_os_delay();
+				non_os_delay();
+				non_os_delay();
+
 				dd_print_text(received_string);
+			}
 		}
 
 		// UI events processing
@@ -1206,11 +1213,6 @@ int main(void)
 
 		// USB Host driver processing
 		//usbh_driver_thread();
-
-		// Debug print driver processing
-#ifdef SIMPLE_DEBUG
-		debug_driver_thread();
-#endif
 
 		// Reset WD - not working
 		//wd_reset();
