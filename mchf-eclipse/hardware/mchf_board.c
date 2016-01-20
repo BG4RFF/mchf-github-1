@@ -122,83 +122,6 @@ static void mchf_board_debug_init(void)
 }
 
 //*----------------------------------------------------------------------------
-//* Function Name       : mchf_board_uart_init
-//* Object              : Enable UART for wifi com with the ESP8266
-//* Object              :
-//* Input Parameters    :
-//* Output Parameters   :
-//* Functions called    :
-//*----------------------------------------------------------------------------
-static void mchf_board_uart_init(void)
-{
-	USART_InitTypeDef USART_InitStructure;
-	GPIO_InitTypeDef GPIO_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
-
-#ifdef DEBUG_BUILD
-	return;	// WiFi can't be used if DEBUGGING is enabled
-#endif
-
-	USART_InitStructure.USART_BaudRate = 9600;//115200;
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;
-	USART_InitStructure.USART_Parity = USART_Parity_No;
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure.USART_Mode = USART_Mode_Tx|USART_Mode_Rx;
-
-	// Enable UART clock
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
-
-	// Connect PXx to USARTx_Tx
-	GPIO_PinAFConfig(UART_TX_PIO, UART_TX_SOURCE, GPIO_AF_USART1);
-	GPIO_PinAFConfig(UART_RX_PIO, UART_RX_SOURCE, GPIO_AF_USART1);
-
-	// Configure USART Tx as alternate function
-	GPIO_InitStructure.GPIO_OType 	= GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd 	= GPIO_PuPd_UP;
-	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF;
-
-	GPIO_InitStructure.GPIO_Pin 	= UART_TX|UART_RX;
-	GPIO_InitStructure.GPIO_Speed 	= GPIO_Speed_50MHz;
-	GPIO_Init(UART_TX_PIO, &GPIO_InitStructure);
-
-	// USART configuration
-	USART_Init(USART1, &USART_InitStructure);
-
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
-
-	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-
-	// Enable USART
-	USART_Cmd(USART1, ENABLE);
-
-	// Wait tx ready
-	while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
-}
-
-//*----------------------------------------------------------------------------
-//* Function Name       : mchf_board_uart_send
-//* Object              : Send string on the UART
-//* Object              :
-//* Input Parameters    :
-//* Output Parameters   :
-//* Functions called    :
-//*----------------------------------------------------------------------------
-void mchf_board_uart_send(char *s)
-{
-	while(*s)
-	{
-		USART_SendData(USART1, *s);
-		*s++;
-		while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
-	}
-}
-
-//*----------------------------------------------------------------------------
 //* Function Name       : mchf_board_keypad_init
 //* Object              :
 //* Object              :
@@ -903,11 +826,6 @@ void mchf_board_init(void)
 
 	// Debugging on
 	mchf_board_debug_init();
-
-	// -------------------------------
-	// UART init test
-	mchf_board_uart_init();
-	// -------------------------------
 
 	// LED init
 	mchf_board_led_init();

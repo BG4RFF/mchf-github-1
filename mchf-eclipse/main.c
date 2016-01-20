@@ -31,6 +31,9 @@
 // Debug driver
 #include "debug_driver.h"
 
+// Network driver
+#include "net_driver.h"
+
 // Misc
 #include "softdds.h"
 
@@ -679,43 +682,6 @@ void EXTI15_10_IRQHandler(void)
 }*/
 
 //*----------------------------------------------------------------------------
-//* Function Name       : USART1_IRQHandler
-//* Object              : USART RX interrupts land here
-//* Object              :
-//* Input Parameters    :
-//* Output Parameters   :
-//* Functions called    :
-//*----------------------------------------------------------------------------
-
-#define MAX_STRLEN 50 // this is the maximum string length of our string in characters
-volatile char received_string[MAX_STRLEN+1]; // this will hold the recieved string
-
-void USART1_IRQHandler(void)
-{
-	// check if the USART1 receive interrupt flag was set
-	if( USART_GetITStatus(USART1, USART_IT_RXNE) )
-	{
-		static uint8_t cnt = 0; // this counter is used to determine the string length
-		char t = USART1->DR; // the character from the USART1 data register is saved in t
-
-		/* check if the received character is not the LF character (used to determine end of string)
-		 * or the if the maximum string length has been been reached
-		 */
-		if( (t != '\n') && (cnt < MAX_STRLEN) ){
-		received_string[cnt] = t;
-		cnt++;
-		}
-		else{ // otherwise reset the character counter and print the received string
-			cnt = 0;
-			//USART_puts(USART1, received_string);
-		}
-
-		//if(cnt > MAX_STRLEN)
-		//	cnt = 0;
-	}
-}
-
-//*----------------------------------------------------------------------------
 //* Function Name       : TransceiverStateInit
 //* Object              :
 //* Object              :
@@ -1003,8 +969,6 @@ static void wd_reset(void)
 //*----------------------------------------------------------------------------
 int main(void)
 {
-	ulong cnt = 0;
-
 	*(__IO uint32_t*)(SRAM2_BASE) = 0x0;	// clearing delay prevent for bootloader
 
 	// Set unbuffered mode for stdout (newlib)
@@ -1154,6 +1118,11 @@ int main(void)
 	// Init simple debug driver
 	debug_driver_init();
 
+	// Init network driver
+	#ifdef USE_UART_WIFI
+	net_driver_init();
+	#endif
+
 	//
 	//
 	UiCalcSubaudibleGenFreq();		// load/set current FM subaudible tone settings for generation
@@ -1180,31 +1149,6 @@ int main(void)
 	// Transceiver main loop
 	for(;;)
 	{
-		cnt++;
-		if(cnt == 200000)
-		{
-			dd_print_text("wifi init...");
-
-			mchf_board_uart_send("AT+CWMODE=2");
-
-			non_os_delay();
-			non_os_delay();
-			non_os_delay();
-			non_os_delay();
-
-			if(received_string[0])
-			{
-				dd_print_text("wifi init done.");
-
-				non_os_delay();
-				non_os_delay();
-				non_os_delay();
-				non_os_delay();
-
-				dd_print_text(received_string);
-			}
-		}
-
 		// UI events processing
 		ui_driver_thread();
 
@@ -1213,6 +1157,11 @@ int main(void)
 
 		// USB Host driver processing
 		//usbh_driver_thread();
+
+		// Net driver processing
+		#ifdef USE_UART_WIFI
+		net_driver_thread();
+		#endif
 
 		// Reset WD - not working
 		//wd_reset();
