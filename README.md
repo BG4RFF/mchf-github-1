@@ -1,16 +1,15 @@
-Testing branch of mcHF firmware and bootloader - sources and binaries
+This project is the porting of cctbcn's CooCox firmware for mcHF
+to Eclipse. Now both IDEs can work on the same sources.
 
 
-Version <219.26.x>
+I*M*P*O*R*T*A*N*T I*N*F*O*R*M*A*T*I*O*N
 
+If you work using CooCox and add a new subfolder which contains header-files (.h),
+please name them in history.txt. Otherwise you break Eclipse users because Eclipse
+MUST know explicit each path of header-files. With your information Eclipse
+configuration can be updated uncomplicated.
 
-Binaries are located in mchf-eclipse and are named:
-- bootloader_testing.dfu
-- mchf_binary_for_flash_testing.bin
+Have fun!
 
-If you only want binaries and not complete sources click on file you want to download and then on the button "Raw" right above the grey bar.
-
-Have fun - Open-Source opens possibilities!
-
-KA7OEI, Clint<br>
-DF8OE, Andreas
+vy 73 de
+Andreas, DF8OE
