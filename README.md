@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 This project is the porting of cctbcn's CooCox firmware for mcHF
 to Eclipse. Now both IDEs can work on the same sources.
 
@@ -13,3 +14,6 @@ Have fun!
 
 vy 73 de
 Andreas, DF8OE
+=======
+# mchf-github
+>>>>>>> origin/master
